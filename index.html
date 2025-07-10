@@ -33,27 +33,33 @@
 
     .container {
       width: 90%;
-      max-width: 400px;
+      max-width: 420px;
       background: #111;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(255, 165, 0, 0.1);
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(255, 115, 0, 0.2);
       text-align: center;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 20px;
     }
 
     h1 {
       font-size: 22px;
       font-weight: 600;
       margin-bottom: 20px;
-      color: #ffa500;
+      color: #ff7300;
     }
 
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
       margin-bottom: 15px;
-      border: 1px solid #ffa500;
+      border: 1px solid #ff7300;
       border-radius: 6px;
       background: #1a1a1a;
       color: #fff;
@@ -61,21 +67,26 @@
 
     button {
       width: 100%;
-      padding: 10px;
-      background-color: #ffa500;
+      padding: 12px;
+      background-color: #ff7300;
       color: #000;
       font-size: 16px;
       font-weight: 600;
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #ffa54d;
     }
 
     #result {
       margin-top: 20px;
       font-size: 18px;
       font-weight: bold;
-      color: #ffa500;
+      color: #ff7300;
     }
 
     .footer {
@@ -83,10 +94,21 @@
       font-size: 13px;
       color: #888;
     }
+
+    @media screen and (max-width: 500px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
+    <img src="infinex.jpeg" alt="Infinex Logo" class="logo" />
     <h1>Infinex Yaprun Rewards Calculator</h1>
     <input type="number" id="rankInput" placeholder="Enter your Rank (1 to 250)" />
     <button onclick="calculateReward()">Calculate Reward</button>
