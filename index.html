@@ -1,124 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Infinex Yaprun Rewards Calculator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-image: url('background.jpg'); /* replace with your image filename */
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      position: relative;
       margin: 0;
-      padding: 0;
-    }
-
-    body::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(255, 255, 255, 0.8); /* white overlay with 80% opacity */
-      z-index: -1;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f0f0f;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-image: url('infinex_yaprun_theme.png.jpg');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-blend-mode: overlay;
     }
 
     .container {
-      max-width: 500px;
-      margin: 5vh auto;
+      background-color: rgba(0, 0, 0, 0.8);
       padding: 30px;
-      background: white;
       border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-      position: relative;
-      z-index: 1;
-    }
-
-    h1 {
+      box-shadow: 0 0 20px #ff6500aa;
       text-align: center;
-      font-size: 24px;
+      width: 90%;
+      max-width: 500px;
     }
 
-    label, input, p {
-      display: block;
-      width: 100%;
-      margin-bottom: 15px;
+    input, button {
+      padding: 12px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
     }
 
     input {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
+      width: 100%;
+      margin-bottom: 20px;
     }
 
     button {
-      padding: 10px;
-      background-color: #444;
+      background-color: #ff6500;
       color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
       cursor: pointer;
-      width: 100%;
     }
 
-    .footer {
-      text-align: center;
-      font-size: 14px;
+    .result {
       margin-top: 20px;
-      color: #777;
+      font-size: 1.2rem;
+      color: #00ffaa;
+    }
+
+    canvas {
+      margin-top: 40px;
+      max-width: 100%;
+    }
+
+    .tooltip {
+      font-size: 0.9rem;
+      margin-top: 10px;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Infinex Yaprun Rewards Calculator</h1>
-    <label for="rank">Enter Your Rank (1 - 250):</label>
-    <input type="number" id="rank" min="1" max="250">
+    <p>Estimate your reward based on your rank</p>
+    <input type="number" id="rankInput" min="1" max="250" placeholder="Enter your rank (1-250)" />
     <button onclick="calculateReward()">Calculate Reward</button>
-    <p id="result"></p>
-    <div class="footer">made by @techiesnft</div>
+    <div class="result" id="resultText"></div>
+    <div class="tooltip" id="tooltip"></div>
+    <canvas id="rewardChart" height="200"></canvas>
+    <p style="font-size: 0.75rem; color: #888; margin-top: 15px">made by @techiesnft</p>
   </div>
 
   <script>
-    const totalReward = 708000;
-    const top10Share = 0.23 * totalReward;
-    const restShare = totalReward - top10Share;
-
-    // Simulate a decaying distribution using inverse square root logic
-    function getDecayReward(rank) {
-      let sum = 0;
-      for (let i = 11; i <= 250; i++) {
-        sum += 1 / Math.sqrt(i);
-      }
-
-      const current = 1 / Math.sqrt(rank);
-      return (current / sum) * restShare;
-    }
+    const TOTAL_REWARDS = 708000;
+    const TOP_10_SHARE = 0.23 * TOTAL_REWARDS;
+    const REMAINING_SHARE = TOTAL_REWARDS - TOP_10_SHARE;
 
     function calculateReward() {
-      const rank = parseInt(document.getElementById("rank").value);
-      let reward;
+      const rank = parseInt(document.getElementById('rankInput').value);
+      let reward = 0;
+      let tooltip = '';
 
-      if (isNaN(rank) || rank < 1 || rank > 250) {
-        document.getElementById("result").innerText = "Please enter a rank between 1 and 250.";
-        return;
-      }
-
-      if (rank <= 10) {
-        // Linear distribution for top 10
-        reward = ((11 - rank) / 55) * top10Share; // 55 = 10+9+...+1
+      if (rank >= 1 && rank <= 10) {
+        const weights = [30, 20, 15, 10, 8, 5, 4, 3, 2.5, 2.5];
+        const totalWeight = weights.reduce((a, b) => a + b, 0);
+        reward = (weights[rank - 1] / totalWeight) * TOP_10_SHARE;
+        tooltip = `Top 10 ranks split 23% of the pool. Rank ${rank} gets weighted share.`;
+      } else if (rank >= 11 && rank <= 250) {
+        const remainingParticipants = 250 - 10;
+        const base = REMAINING_SHARE * 0.001; // base decay
+        const decayFactor = Math.pow(0.992, rank - 11);
+        reward = base * decayFactor * 100;
+        tooltip = `Rank ${rank} falls under remaining pool. Uses slight decay for realism.`;
       } else {
-        reward = getDecayReward(rank);
+        reward = 0;
+        tooltip = 'Rank must be between 1 and 250.';
       }
 
-      document.getElementById("result").innerText = `Estimated reward for rank ${rank}: $${reward.toFixed(2)}`;
+      document.getElementById('resultText').innerText = `🎉 Estimated reward for rank ${rank}: $${reward.toFixed(2)}`;
+      document.getElementById('tooltip').innerText = tooltip;
+      updateChart(rank, reward);
+    }
+
+    function updateChart(rank, reward) {
+      const ctx = document.getElementById('rewardChart').getContext('2d');
+      if (window.rewardChart) window.rewardChart.destroy();
+      window.rewardChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: [`Rank ${rank}`],
+          datasets: [{
+            label: 'Reward ($)',
+            data: [reward],
+            backgroundColor: '#ff6500',
+            borderRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
     }
   </script>
 </body>
