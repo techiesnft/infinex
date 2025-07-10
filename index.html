@@ -13,14 +13,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       min-height: 100vh;
-      background-image: url('infinex_yaprun_theme.png.jpg'); /* Replace with your uploaded image */
+      background-image: url('infinex_yaprun_theme.png.jpg');
       background-size: cover;
       background-position: center;
       padding-top: 100px;
     }
-
     .container {
       background-color: rgba(0, 0, 0, 0.85);
       padding: 30px;
@@ -30,89 +29,70 @@
       max-width: 500px;
       text-align: center;
     }
-
     h1 {
-      font-size: 2em;
-      margin-bottom: 0.2em;
-      color: #fff;
+      margin-bottom: 10px;
     }
-
-    h2 {
-      font-size: 1em;
-      margin-bottom: 1em;
-      color: #ccc;
-    }
-
-    input {
-      padding: 12px;
-      width: 100%;
-      font-size: 1.2em;
+    input[type="number"] {
+      width: 90%;
+      padding: 10px;
+      font-size: 16px;
+      margin: 20px 0;
       border: none;
       border-radius: 6px;
-      margin-bottom: 20px;
     }
-
     button {
-      padding: 12px 24px;
-      font-size: 1em;
+      padding: 10px 20px;
+      font-size: 16px;
       background-color: #ff6500;
       color: #fff;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: bold;
     }
-
-    button:hover {
-      background-color: #e55700;
-    }
-
     .result {
       margin-top: 20px;
-      font-size: 1.4em;
-      color: #00ffcc;
+      font-size: 18px;
+      color: #00ffaa;
     }
-
     .footer {
-      margin-top: 50px;
-      font-size: 0.8em;
-      color: #555;
+      margin-top: 30px;
+      font-size: 12px;
+      color: #999;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Infinex Yaprun Rewards Calculator</h1>
-    <h2>Estimate your reward based on your rank</h2>
-    <input type="number" id="rank" placeholder="Enter your rank (1 to 250)" />
-    <button onclick="calculateReward()">Calculate Reward</button>
-    <div class="result" id="reward"></div>
-  </div>
-  <div class="footer">
-    quietly made by @techiesnft
+    <p>Estimate your reward based on your rank</p>
+    <input type="number" id="rankInput" placeholder="Enter your rank..." />
+    <br />
+    <button onclick="showReward()">Calculate Reward</button>
+    <div class="result" id="resultText"></div>
+    <div class="footer">made by @techiesnft</div>
   </div>
 
   <script>
-    function calculateReward() {
+    function calculateReward(rank) {
       const totalRewards = 708000;
-      const rank = parseInt(document.getElementById('rank').value);
-      let reward = 0;
+      const A = 1.83;
+      const b = 1.90;
+      const percent = A * Math.pow(rank, -b);
+      const reward = totalRewards * percent;
+      return reward.toFixed(2);
+    }
 
-      if (rank < 1 || rank > 250 || isNaN(rank)) {
-        document.getElementById('reward').textContent = '❌ Only ranks 1–250 qualify for rewards.';
+    function showReward() {
+      const rank = parseInt(document.getElementById('rankInput').value);
+      const resultText = document.getElementById('resultText');
+
+      if (!rank || rank <= 0) {
+        resultText.innerText = 'Please enter a valid rank.';
         return;
       }
 
-      if (rank === 1) reward = totalRewards * 0.05;
-      else if (rank === 2) reward = totalRewards * 0.035;
-      else if (rank === 3) reward = totalRewards * 0.025;
-      else if (rank <= 10) reward = totalRewards * (0.23 / 10);
-      else if (rank === 19) reward = totalRewards * 0.0067;
-      else if (rank <= 50) reward = totalRewards * 0.0015;
-      else if (rank <= 100) reward = totalRewards * 0.0009;
-      else reward = totalRewards * 0.0003;
-
-      document.getElementById('reward').textContent = `🎉 Estimated reward for rank ${rank}: $${reward.toFixed(2)}`;
+      const reward = calculateReward(rank);
+      resultText.innerText = `🎉 Estimated reward for rank ${rank}: $${reward}`;
     }
   </script>
 </body>
