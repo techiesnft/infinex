@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Infinex Yaprun Rewards Calculator</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #000;
-      color: #ffa500;
-      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d0d0d;
+      color: #fff;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       background-image: url('background.jpg');
       background-size: cover;
       background-position: center;
@@ -22,79 +22,91 @@
     }
 
     .overlay {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.85); /* controls darkness */
-      z-index: 1;
-    }
-
-    .container {
-      position: relative;
-      z-index: 2;
-      background-color: rgba(15, 15, 15, 0.9);
-      border: 1px solid #ffa500;
-      padding: 40px;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 40px 30px;
       border-radius: 12px;
-      text-align: center;
-      max-width: 400px;
+      box-shadow: 0 0 20px #ff7300;
+      max-width: 420px;
       width: 90%;
+      text-align: center;
     }
 
     .logo {
       width: 60px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     h1 {
-      font-size: 22px;
-      margin-bottom: 24px;
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #ff7300;
     }
 
     input {
-      width: 70%;
-      padding: 10px 12px;
+      width: 100%;
+      max-width: 380px;
+      padding: 14px;
       font-size: 16px;
-      border: 1px solid #ffa500;
-      border-radius: 6px;
-      background-color: #111;
-      color: #ffa500;
-      margin-bottom: 16px;
+      border: 1px solid #ff7300;
+      border-radius: 8px;
+      background: #1a1a1a;
+      color: #fff;
+      margin: 0 auto 15px auto;
+      display: block;
     }
 
     button {
-      padding: 10px 16px;
-      background-color: #ffa500;
+      width: 160px;
+      padding: 12px;
+      background-color: #ff7300;
       color: #000;
-      font-weight: bold;
       font-size: 15px;
+      font-weight: 600;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      margin-left: 8px;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    button:hover {
+      background-color: #ffa94d;
     }
 
     .result {
       margin-top: 20px;
       font-size: 18px;
-      color: #ffa500;
+      font-weight: 600;
+      color: #ff7300;
     }
 
     .footer {
-      margin-top: 30px;
+      margin-top: 20px;
       font-size: 12px;
-      color: #666;
+      color: #aaa;
+    }
+
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 18px;
+      }
+
+      .logo {
+        width: 50px;
+      }
+
+      input {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="overlay"></div>
-  <div class="container">
-    <img src="infinex.jpg" alt="Infinex Logo" class="logo" />
+  <div class="overlay">
+    <img src="infinex.jpg" alt="Logo" class="logo" />
     <h1>Infinex Yaprun Rewards Calculator</h1>
-    <input type="number" id="rankInput" placeholder="Enter your rank (1-250)" />
-    <button onclick="calculateReward()">Calculate</button>
-    <div class="result" id="resultBox"></div>
+    <input type="number" id="rankInput" placeholder="Enter your Rank (1 to 250)" />
+    <button onclick="calculateReward()">Calculate Reward</button>
+    <div id="result" class="result"></div>
     <div class="footer">made by @techiesnft</div>
   </div>
 
