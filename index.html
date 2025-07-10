@@ -6,7 +6,6 @@
   <title>Infinex Yaprun Rewards Calculator</title>
   <style>
     body {
-      position: relative;
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #0f0f0f;
@@ -14,15 +13,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100vh;
       padding-top: 100px;
-      overflow: hidden;
     }
 
-    body::before {
-      content: "";
-      position: absolute;
+    .background {
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
@@ -30,13 +27,11 @@
       background-image: url('infinex_yaprun_theme.png.jpg');
       background-size: cover;
       background-position: center;
-      opacity: 0.08;
-      z-index: 0;
+      opacity: 0.05;
+      z-index: -1;
     }
 
     .container {
-      position: relative;
-      z-index: 1;
       background-color: rgba(0, 0, 0, 0.85);
       padding: 30px;
       border-radius: 12px;
@@ -47,73 +42,88 @@
     }
 
     h1 {
+      font-size: 28px;
       margin-bottom: 10px;
     }
 
-    input[type="number"] {
-      width: 90%;
-      padding: 10px;
-      font-size: 16px;
-      margin: 20px 0;
-      border: none;
+    input {
+      padding: 12px;
+      font-size: 18px;
+      width: 80%;
       border-radius: 6px;
+      border: none;
+      margin-top: 20px;
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 16px;
+      margin-top: 20px;
+      padding: 12px 20px;
       background-color: #ff6500;
-      color: #fff;
       border: none;
+      color: white;
+      font-size: 16px;
       border-radius: 6px;
       cursor: pointer;
     }
 
     .result {
       margin-top: 20px;
-      font-size: 18px;
-      color: #00ffaa;
+      font-size: 20px;
+      color: #00ffa3;
     }
 
     .footer {
-      margin-top: 30px;
+      margin-top: 40px;
       font-size: 12px;
-      color: #999;
+      color: #888;
     }
   </style>
 </head>
 <body>
+  <div class="background"></div>
+
   <div class="container">
     <h1>Infinex Yaprun Rewards Calculator</h1>
     <p>Estimate your reward based on your rank</p>
-    <input type="number" id="rankInput" placeholder="Enter your rank..." />
-    <br />
-    <button onclick="showReward()">Calculate Reward</button>
+    <input type="number" id="rankInput" placeholder="Enter your rank (1–250)" />
+    <button onclick="calculateReward()">Calculate Reward</button>
     <div class="result" id="resultText"></div>
     <div class="footer">made by @techiesnft</div>
   </div>
 
   <script>
-    function calculateReward(rank) {
-      const totalRewards = 708000;
-      const A = 1.83;
-      const b = 1.90;
-      const percent = A * Math.pow(rank, -b);
-      const reward = totalRewards * percent;
-      return reward.toFixed(2);
-    }
+    function calculateReward() {
+      const rank = parseInt(document.getElementById("rankInput").value);
+      const resultText = document.getElementById("resultText");
 
-    function showReward() {
-      const rank = parseInt(document.getElementById('rankInput').value);
-      const resultText = document.getElementById('resultText');
-
-      if (!rank || rank <= 0) {
-        resultText.innerText = 'Please enter a valid rank.';
+      if (isNaN(rank) || rank < 1 || rank > 250) {
+        resultText.textContent = "Please enter a valid rank between 1 and 250.";
         return;
       }
 
-      const reward = calculateReward(rank);
-      resultText.innerText = `\ud83c\udf89 Estimated reward for rank ${rank}: $${reward}`;
+      const totalRewards = 708000;
+      const top10Share = 0.23;
+      const remainingShare = 1 - top10Share;
+
+      let reward = 0;
+
+      if (rank <= 10) {
+        const totalTop10 = 10;
+        const weights = Array.from({ length: totalTop10 }, (_, i) => 1 / (i + 1));
+        const totalWeight = weights.reduce((a, b) => a + b, 0);
+        reward = (weights[rank - 1] / totalWeight) * (totalRewards * top10Share);
+      } else {
+        const remainingRanks = Array.from({ length: 240 }, (_, i) => 1 / (i + 11));
+        const totalWeight = remainingRanks.reduce((a, b) => a + b, 0);
+        const adjustedWeights = remainingRanks.map(w => w / totalWeight * (totalRewards * remainingShare));
+
+        // Apply scaling factor to make rank 31 ≈ $1,984
+        const baseReward = adjustedWeights[20]; // index for rank 31 (starts at 11)
+        const scalingFactor = 1984 / baseReward;
+        reward = adjustedWeights[rank - 11] * scalingFactor;
+      }
+
+      resultText.textContent = `🎉 Estimated reward for rank ${rank}: $${reward.toFixed(2)}`;
     }
   </script>
 </body>
