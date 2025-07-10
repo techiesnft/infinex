@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infinex Yaprun Rewards Calculator</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f0f0f;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      background-image: url('infinex_yaprun_theme.png'); /* Replace with your uploaded image */
+      background-size: cover;
+      background-position: center;
+      padding-top: 100px;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.85);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #ff6500aa;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 0.2em;
+      color: #fff;
+    }
+
+    h2 {
+      font-size: 1em;
+      margin-bottom: 1em;
+      color: #ccc;
+    }
+
+    input {
+      padding: 12px;
+      width: 100%;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 1em;
+      background-color: #ff6500;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #e55700;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 1.4em;
+      color: #00ffcc;
+    }
+
+    .footer {
+      margin-top: 50px;
+      font-size: 0.8em;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Infinex Yaprun Rewards Calculator</h1>
+    <h2>Estimate your reward based on your rank</h2>
+    <input type="number" id="rank" placeholder="Enter your rank (1 to 250)" />
+    <button onclick="calculateReward()">Calculate Reward</button>
+    <div class="result" id="reward"></div>
+  </div>
+  <div class="footer">
+    quietly made by @techiesnft
+  </div>
+
+  <script>
+    function calculateReward() {
+      const totalRewards = 708000;
+      const rank = parseInt(document.getElementById('rank').value);
+      let reward = 0;
+
+      if (rank < 1 || rank > 250 || isNaN(rank)) {
+        document.getElementById('reward').textContent = '❌ Only ranks 1–250 qualify for rewards.';
+        return;
+      }
+
+      if (rank === 1) reward = totalRewards * 0.05;
+      else if (rank === 2) reward = totalRewards * 0.035;
+      else if (rank === 3) reward = totalRewards * 0.025;
+      else if (rank <= 10) reward = totalRewards * (0.23 / 10);
+      else if (rank === 19) reward = totalRewards * 0.0067;
+      else if (rank <= 50) reward = totalRewards * 0.0015;
+      else if (rank <= 100) reward = totalRewards * 0.0009;
+      else reward = totalRewards * 0.0003;
+
+      document.getElementById('reward').textContent = `🎉 Estimated reward for rank ${rank}: $${reward.toFixed(2)}`;
+    }
+  </script>
+</body>
+</html>
