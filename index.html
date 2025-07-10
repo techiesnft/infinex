@@ -1,122 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Infinex Yaprun Rewards Calculator</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #0f0f0f;
-      color: #ffffff;
+      color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background-image: url('infinex_yaprun_theme.png');
+      padding: 20px;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      background-image: url('infinex_yaprun_theme.png.jpg');
       background-size: cover;
       background-position: center;
-    }
-
-    body::before {
-      content: '';
-      position: absolute;
+      opacity: 0.07;
+      position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.6);
-      z-index: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
     }
-
     .container {
-      position: relative;
-      z-index: 1;
       background-color: rgba(0, 0, 0, 0.85);
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 0 20px #ff6500aa;
-      max-width: 500px;
       width: 90%;
+      max-width: 500px;
       text-align: center;
     }
-
-    input[type="number"] {
-      width: 100%;
+    input {
       padding: 12px;
-      margin: 20px 0;
-      border-radius: 6px;
+      font-size: 18px;
+      width: 100%;
       border: none;
-      font-size: 1rem;
+      border-radius: 6px;
+      margin-bottom: 16px;
     }
-
     button {
-      padding: 12px 24px;
       background-color: #ff6500;
       color: white;
+      padding: 12px 24px;
+      font-size: 16px;
       border: none;
       border-radius: 6px;
-      font-size: 1rem;
       cursor: pointer;
     }
-
+    button:hover {
+      background-color: #e85d00;
+    }
     .result {
       margin-top: 20px;
-      font-size: 1.1rem;
+      font-size: 18px;
       color: #00ffcc;
     }
-
     .footer {
-      margin-top: 16px;
-      font-size: 0.8rem;
-      color: #999;
+      margin-top: 24px;
+      font-size: 12px;
+      color: #aaa;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Infinex Yaprun Rewards Calculator</h2>
+    <h1>Infinex Yaprun Rewards Calculator</h1>
     <p>Estimate your reward based on your rank</p>
-    <input type="number" id="rankInput" placeholder="Enter your rank (1-250)" min="1" max="250" />
+    <input type="number" id="rankInput" placeholder="Enter your rank">
     <button onclick="calculateReward()">Calculate Reward</button>
     <div id="result" class="result"></div>
     <div class="footer">made by @techiesnft</div>
   </div>
 
   <script>
-    const totalRewards = 708000;
-    const top10Share = 0.23;
-    const top10Total = totalRewards * top10Share;
-    const remainingTotal = totalRewards - top10Total;
-
-    const decayRate = 0.035;
-    const targetRank = 31;
-    const targetReward = 9313.34;
-    const baseReward = targetReward / Math.exp(-decayRate * (targetRank - 10));
-
-    const decayRewards = Array.from({ length: 240 }, (_, i) => {
-      const rank = i + 11;
-      return baseReward * Math.exp(-decayRate * (rank - 10));
-    });
-    const decaySum = decayRewards.reduce((a, b) => a + b, 0);
-    const scaledRewards = decayRewards.map(r => (r / decaySum) * remainingTotal);
-
-    const finalRewards = Array.from({ length: 250 }, (_, i) => {
-      if (i < 10) return top10Total / 10;
-      return scaledRewards[i - 10];
-    });
-
     function calculateReward() {
-      const rank = parseInt(document.getElementById('rankInput').value);
-      const resultEl = document.getElementById('result');
-      if (isNaN(rank) || rank < 1 || rank > 250) {
-        resultEl.textContent = "Please enter a valid rank between 1 and 250.";
-        return;
+      const rank = parseInt(document.getElementById("rankInput").value);
+      const totalRewards = 708000;
+      const top10Share = 0.23;
+      const top10Rewards = totalRewards * top10Share;
+      const remainingRewards = totalRewards - top10Rewards;
+
+      let reward;
+
+      if (rank >= 1 && rank <= 10) {
+        // Split 23% evenly across top 10
+        reward = top10Rewards / 10;
+      } else if (rank >= 11 && rank <= 250) {
+        // Split remaining 77% among 240 participants (11 to 250)
+        reward = remainingRewards / 240;
+      } else {
+        reward = 0;
       }
-      const reward = finalRewards[rank - 1];
-      resultEl.textContent = `🎉 Estimated reward for rank ${rank}: $${reward.toFixed(2)}`;
+
+      document.getElementById("result").textContent = `🎉 Estimated reward for rank ${rank}: $${reward.toFixed(2)}`;
     }
   </script>
 </body>
